@@ -33,9 +33,25 @@ public final class Constants {
     public static final int coralMotorCANID = 7;
     public static final int coralWristCANID = 8;
     //1 left 2 right
+    //Wrist Encoder Port //DIO
+    public static final int wristPort = 0;
     
   }
     public static class motorSpeeds{
       public static final double intakespeed = .5;
     }
+      public static class PIDValues{
+        public static final double kP = .1;
+        public static final double kI = 0;
+        public static final double kD = .01;
+        // Velocity for NEO 550
+        public static final double kV = 917;
+
+
+}
+  public static class Parameter{
+    public static final double wristOffset = 180;
+    
+
+  }
 }
