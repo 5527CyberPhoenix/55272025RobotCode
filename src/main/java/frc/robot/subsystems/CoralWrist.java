@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PIDValues;
 import frc.robot.Constants.Parameter;
@@ -25,46 +26,60 @@ public class CoralWrist extends SubsystemBase {
   private static SparkMaxConfig set = new SparkMaxConfig();
   private static SparkAbsoluteEncoder encoder = motor.getAbsoluteEncoder();
   private static AbsoluteEncoderConfig config = new AbsoluteEncoderConfig();
+  private boolean atSetpoint = false;
   /** Creates a new CoralWrist. */
-  public CoralWrist(double setpoint) {
+  public CoralWrist() {
+    
     // Sets the setpoint in raw position mode
-  PIDcontroller.setReference(setpoint, ControlType.kMAXMotionPositionControl);
-    set.closedLoop
-      .p(PIDValues.kP)  
-      .i(PIDValues.kI)   
-      .d(PIDValues.kD)
-      .velocityFF(1/PIDValues.kV)
-      .outputRange(0.1, 1); 
-       
+  
     }
       //get encoder position 
       public double getCurrentPosition(){
         return encoder.getPosition()*360 - Parameter.wristOffset;
       }
       
+      public void setOffset(){
+        config.zeroOffset(-180);
+      }
      
 
-      //sets the motor output speed 
-      public void setMotor(double setpoint, double lastError){
-        double error = setpoint - getCurrentPosition();
-        double errorRate = (error - lastError);
-        double outputSpeed = PIDValues.kP * error + PIDValues.kD * errorRate;
-        motor.set(outputSpeed);
+      //allows user to input setpoints
+      public void setMotor(double setpoint){
+        boolean atSetpoint = false;
+        double tolerance = 3;
+        double outputSpeed = .3;
+        if(getCurrentPosition() > setpoint + tolerance){
+          motor.set(-outputSpeed);
+        }
+        else if(getCurrentPosition() < setpoint + tolerance){
+          motor.set(outputSpeed);
+        }
+        else{
+          motorSTOP();
+          atSetpoint = true;
+        }
+        
 
       }
+      public boolean getGoal(){
+        return atSetpoint;
+      }
       
-        public void zeroEncoder(){
-          config.zeroOffset(0);
+        public void motorSTOP(){
+          motor.set(0);
           
         }
           public void isReversed(){
             config.inverted(false);
           }
+
         
       
-
+    // This method will be called once per scheduler run
   @Override
   public void periodic() {
-    // This method will be called once per scheduler run
+    super.periodic();
+    SmartDashboard.putNumber("Absolute Encoder", getCurrentPosition());
+    
   }
 }

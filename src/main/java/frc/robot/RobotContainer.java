@@ -7,12 +7,14 @@ package frc.robot;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.Autos;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.FlexWrist;
 import frc.robot.commands.RunAlgae;
 import frc.robot.commands.RunCoral;
 import frc.robot.commands.SpitAlgae;
 import frc.robot.commands.SpitCoral;
 import frc.robot.subsystems.AlgaeManipulator;
 import frc.robot.subsystems.CoralIntake;
+import frc.robot.subsystems.CoralWrist;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -27,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   private final AlgaeManipulator algae = new AlgaeManipulator();
   private final CoralIntake coral = new CoralIntake();
+  private final CoralWrist wrist = new CoralWrist();
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
@@ -64,6 +67,7 @@ public class RobotContainer {
     m_operatorController.leftBumper().whileTrue(new RunCoral(coral));
     m_operatorController.leftTrigger().whileTrue(new SpitCoral(coral));
     m_operatorController.a().whileTrue(new RunAlgae(algae).alongWith(new RunCoral(coral)));
+    m_operatorController.b().onTrue(new FlexWrist(wrist, 150));
   }
 
   /**
